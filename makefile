@@ -15,12 +15,12 @@ CODES_PERMANENTS='ABCD01020304,GHIJ11121314'
 # Un etudiant:
 # Si vous etes seul: Supprimer le diese en debut de ligne et
 # indiquer votre code permanent (sans changer le nom de la variable).
-#CODES_PERMANENTS='ABCD01020304'
+CODES_PERMANENTS='DEBL10099404'
 
 #--------------------------------------------------------
 
 ########################################################################
-PGM=./ga.sh
+PGM=bash ga.sh
 ########################################################################
 
 .IGNORE:
@@ -49,7 +49,7 @@ wip_test:
 ##################################
 # Cibles pour les exexmples d'execution.
 ##################################
-ex ex_all: 
+ex ex_all:
 	@echo ""
 	make ex_ajouter
 	@echo ""
@@ -159,4 +159,3 @@ remise:
 
 ########################################################################
 ########################################################################
-

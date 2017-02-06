@@ -46,7 +46,7 @@ function erreur {
     # On emet le message d'aide si commande fournie invalide.
     # Par contre, ce message doit etre emis sur stdout.
     [[ ! $msg =~ Commande\ inconnue ]] || aide
-    
+
     exit 1
 }
 
@@ -68,13 +68,13 @@ SYNOPSIS
 
 COMMANDES
   aide          - Emet la liste des commandes
-  ajouter       - Ajoute un cours dans la banque de cours 
+  ajouter       - Ajoute un cours dans la banque de cours
                   (les prealables doivent exister)
-  desactiver    - Rend inactif un cours actif 
+  desactiver    - Rend inactif un cours actif
                   (ne peut plus etre utilise comme nouveau prealable)
   init          - Cree une nouvelle base de donnees pour gerer des cours
                   (dans './$DEPOT_DEFAUT' si --depot n'est pas specifie)
-  lister        - Liste l'ensemble des cours de la banque de cours 
+  lister        - Liste l'ensemble des cours de la banque de cours
                   (ordre croissant de sigle)
   nb_credits    - Nombre total de credits pour les cours indiques
   prealables    - Liste l'ensemble des prealables d'un cours
@@ -116,11 +116,13 @@ function init {
     nb_arguments=0
 
     # A COMPLETER: traitement de la switch --detruire!
-
+    echo $depot
+    echo $1
     if [[ -f $depot ]]; then
         # Depot existe deja.
         # On le detruit quand --detruire est specifie.
-        [[ $detruire ]] || erreur "Le fichier '$depot' existe. Si vous voulez le detruire, utilisez 'init --detruire'."
+        [[ $detruire ]] || erreur "Le fichier '$depot' existe.\
+ Si vous voulez le detruire, utilisez 'init --detruire'."
         \rm -f $depot
     fi
 
@@ -182,7 +184,7 @@ function ajouter {
 # Commande trouver
 #
 # Arguments: depot [--avec_inactifs] [--cle_tri=sigle|titre] [--format=un_format] motif
-# 
+#
 # Erreurs:
 # - depot inexistant
 # - nombre incorrect d'arguments
@@ -197,7 +199,7 @@ function trouver {
 # Commande nb_credits
 #
 # Arguments: depot [sigle...]
-# 
+#
 # Erreurs:
 # - depot inexistant
 # - sigle inexistant
@@ -211,7 +213,7 @@ function nb_credits {
 # Commande supprimer
 #
 # Arguments: depot sigle
-# 
+#
 # Erreurs:
 # - depot inexistant
 # - nombre incorrect d'arguments
@@ -226,7 +228,7 @@ function supprimer {
 # Commande desactiver
 #
 # Arguments: depot sigle
-# 
+#
 # Erreurs:
 # - depot inexistant
 # - nombre incorrect d'arguments
@@ -241,7 +243,7 @@ function desactiver {
 # Commande reactiver
 #
 # Arguments: depot sigle
-# 
+#
 # Erreurs:
 # - depot inexistant
 # - nombre incorrect d'arguments
@@ -287,11 +289,18 @@ function main {
   # On definit le depot a utiliser.
   # A COMPLETER: il faut verifier si le flag --depot=... a ete specifie.
   # Si oui, il faut modifier depot en consequence!
-  depot=$DEPOT_DEFAUT
-
+  if [[ $1 =~ --depot=* ]]; then
+    #echo "dans le if"
+    depot=${1#*=};shift
+  else
+    #echo "pas dans le if"
+    depot=$DEPOT_DEFAUT
+  fi
+  #echo $depot
+  assert_depot_existe $depot
   debug "On utilise le depot suivant:", $depot
 
-  
+
   # On analyse la commande (= dispatcher).
   commande=$1
   shift
@@ -310,11 +319,11 @@ function main {
       trouver)
           $commande $depot "$@";;
 
-      *) 
+      *)
           erreur "Commande inconnue: '$commande'";;
   esac
   shift $?
-  
+
   [[ $# == 0 ]] || erreur "Argument(s) en trop: '$@'"
 }
 
