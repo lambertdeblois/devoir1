@@ -4,7 +4,7 @@
 
 
 # Nom de fichier pour depot par defaut.
-DEPOT_DEFAUT=.cours.txt
+DEPOT_DEFAUT=a.cours.txt
 
 ##########################################################################
 # Fonctions pour debogage et traitement des erreurs.
@@ -116,17 +116,24 @@ function init {
     nb_arguments=0
 
     # A COMPLETER: traitement de la switch --detruire!
-    echo $depot
-    echo $1
+    #echo $depot
+    if [[ $1 =~ --detruire ]]; then
+      #echo "if detruire"
+      detruire=true
+      nb_arguments=1
+    fi
+
     if [[ -f $depot ]]; then
         # Depot existe deja.
         # On le detruit quand --detruire est specifie.
         [[ $detruire ]] || erreur "Le fichier '$depot' existe.\
  Si vous voulez le detruire, utilisez 'init --detruire'."
+        #echo "depot detruit $depot"
         \rm -f $depot
     fi
 
     # On 'cree' le fichier vide.
+    #echo "touch dept"
     touch $depot
 
     return $nb_arguments
@@ -183,7 +190,8 @@ function ajouter {
 #-------
 # Commande trouver
 #
-# Arguments: depot [--avec_inactifs] [--cle_tri=sigle|titre] [--format=un_format] motif
+# Arguments: depot [--avec_inactifs] [--cle_tri=sigle|titre]
+# [--format=un_format] motif
 #
 # Erreurs:
 # - depot inexistant
@@ -297,7 +305,6 @@ function main {
     depot=$DEPOT_DEFAUT
   fi
   #echo $depot
-  assert_depot_existe $depot
   debug "On utilise le depot suivant:", $depot
 
 
