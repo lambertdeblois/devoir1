@@ -40,8 +40,8 @@ function erreur {
 
     # A COMPLETER: Les erreurs doivent etre emises stderr...
     # mais ce n'est pas le cas pour l'instant!
-    echo "*** Erreur: $msg"
-    echo ""
+    >&2 echo "*** Erreur: $msg"
+    >&2 echo ""
 
     # On emet le message d'aide si commande fournie invalide.
     # Par contre, ce message doit etre emis sur stdout.
@@ -164,6 +164,9 @@ readonly SEPARATEUR_PREALABLES=:
 # - depot inexistant
 #-------
 function lister {
+    nb_arguments=0
+    assert_depot_existe $1
+
     return 0
 }
 
