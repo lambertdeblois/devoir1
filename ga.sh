@@ -1,4 +1,4 @@
-#!/bin/sh -
+#!/bin/bash -
 #
 # Gestion de cours de programme d'etudes.
 
@@ -166,8 +166,10 @@ readonly SEPARATEUR_PREALABLES=:
 function lister {
     nb_arguments=0
     assert_depot_existe $1
+    depot=$1; shift
 
-    return 0
+
+    return $nb_arguments
 }
 
 
