@@ -195,7 +195,14 @@ function lister {
 
 
 function ajouter {
-    return 0
+    nb_arguments=0
+    assert_depot_existe $1
+    depot=$1; shift
+
+    [[ $# -lt 3 ]] && erreur "Besoin de 3 arguments minimum"
+    nb_arguments=3
+    
+    return $nb_arguments
 }
 
 
