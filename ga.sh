@@ -169,10 +169,11 @@ function lister {
     depot=$1; shift
 
     if [[ $1 =~ --avec_inactifs ]]; then
-      awk -F"$SEP" {print} $depot
+      awk -F"$SEP" '/,INACTIF$/ {print $1"?", "\""$2"\"", "("$4")"}
+                    /,ACTIF$/ {print $1, "\""$2"\"", "("$4")"}' $depot | sort
       nb_arguments=1
     else
-      awk -F"$SEP" '/,ACTIF$/ {print $1, "\""$2"\"", "("$4")"}' $depot
+      awk -F"$SEP" '/,ACTIF$/ {print $1, "\""$2"\"", "("$4")"}' $depot | sort
     fi
 
     return $nb_arguments
