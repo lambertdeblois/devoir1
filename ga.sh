@@ -172,9 +172,9 @@ function lister {
       awk -F"$SEP" {print} $depot
       nb_arguments=1
     else
-      awk -F"$SEP" '/,ACTIF$/ {print}' $depot
+      awk -F"$SEP" '/,ACTIF$/ {print $1, "\""$2"\"", "("$4")"}' $depot
     fi
-    
+
     return $nb_arguments
 }
 
