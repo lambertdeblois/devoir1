@@ -167,9 +167,14 @@ function lister {
     nb_arguments=0
     assert_depot_existe $1
     depot=$1; shift
-    #echo "avant print"
-    awk -F"$SEP" {print} $depot
-    #echo "apres print"
+
+    if [[ $1 =~ --avec_inactifs ]]; then
+      awk -F"$SEP" {print} $depot
+      nb_arguments=1
+    else
+      awk -F"$SEP" '/,ACTIF$/ {print}' $depot
+    fi
+    
     return $nb_arguments
 }
 
