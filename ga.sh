@@ -167,8 +167,9 @@ function lister {
     nb_arguments=0
     assert_depot_existe $1
     depot=$1; shift
-
-
+    #echo "avant print"
+    awk -F"$SEP" {print} $depot
+    #echo "apres print"
     return $nb_arguments
 }
 
