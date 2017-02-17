@@ -4,7 +4,7 @@
 
 
 # Nom de fichier pour depot par defaut.
-DEPOT_DEFAUT=a.cours.txt
+DEPOT_DEFAUT=.cours.txt
 
 ##########################################################################
 # Fonctions pour debogage et traitement des erreurs.
@@ -308,13 +308,15 @@ function desactiver {
   assert_depot_existe $1
   depot=$1; shift
 
-  [[ $# == 1 ]] && erreur "Besoin de seulement 2 arguments"
+  [[ $# != 1 ]] && erreur "Besoin de seulement 2 arguments"
   nb_arguments=1
 
   avec_inactifs=--avec_inactifs
-  sigle_existe $depot $1 $avec_inactifs && erreur "Sigle n'existe pas"
+  ! sigle_existe $depot $1 $avec_inactifs && erreur "Sigle n'existe pas"
 
-  #code desactiver
+  grep -i ^$1.*INACTIF$ $depot && erreur "cours deja inactif"
+
+  sed -i "/^"$1"/ s/ACTIF/INACTIF/" $depot
 
   return $nb_arguments
 }
