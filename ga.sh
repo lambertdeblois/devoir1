@@ -154,6 +154,24 @@ readonly SEP=$SEPARATEUR # Alias, pour alleger le code
 # Separateur pour les prealables d'un cours.
 readonly SEPARATEUR_PREALABLES=:
 
+#function pour valider si le sigle existe
+#
+#arguments: depot sigle [--avec_inactifs]
+function sigle_existe {
+  assert_depot_existe $1
+  depot=$1; shift
+
+  if [[ $2 =~ --avec_inactifs ]]; then
+    grep -q $1, $depot
+    rep=$?
+  else
+    grep -q $1, $depot | grep -qv INACTIF$
+    rep=$?
+    echo $rep
+  fi
+  echo $rep
+  return $rep
+}
 
 #-------
 # Commande lister
@@ -201,7 +219,10 @@ function ajouter {
 
     [[ $# -lt 3 ]] && erreur "Besoin de 3 arguments minimum"
     nb_arguments=3
-    
+
+    avec_inactifs=--avec_inactifs
+    sigle_existe $depot $1 $avec_inactifs && erreur "Sigle existe deja"
+
     return $nb_arguments
 }
 
@@ -232,7 +253,16 @@ function trouver {
 # - sigle inexistant
 #-------
 function nb_credits {
-    return 0
+    nb_arguments=0
+    assert_depot_existe $1
+    depot=$1; shift
+
+    avec_inactifs=--avec_inactifs
+    sigle_existe $depot $1 $avec_inactifs && erreur "Sigle existe deja"
+
+    #code nb_credits
+
+    return $nb_arguments
 }
 
 
@@ -247,7 +277,19 @@ function nb_credits {
 # - sigle inexistant
 #-------
 function supprimer {
-    return 0
+    nb_arguments=0
+    assert_depot_existe $1
+    depot=$1; shift
+
+    [[ $# == 1 ]] && erreur "Besoin de seulement 2 arguments"
+    nb_arguments=1
+
+    avec_inactifs=--avec_inactifs
+    sigle_existe $depot $1 $avec_inactifs && erreur "Sigle n'existe pas"
+
+    #code supprimer
+
+    return $nb_arguments
 }
 
 
@@ -263,7 +305,19 @@ function supprimer {
 # - cours deja inactif
 #-------
 function desactiver {
-    return 0
+  nb_arguments=0
+  assert_depot_existe $1
+  depot=$1; shift
+
+  [[ $# == 1 ]] && erreur "Besoin de seulement 2 arguments"
+  nb_arguments=1
+
+  avec_inactifs=--avec_inactifs
+  sigle_existe $depot $1 $avec_inactifs && erreur "Sigle n'existe pas"
+
+  #code desactiver
+
+  return $nb_arguments
 }
 
 #-------
@@ -278,7 +332,19 @@ function desactiver {
 # - cours deja actif
 #-------
 function reactiver {
-    return 0
+  nb_arguments=0
+  assert_depot_existe $1
+  depot=$1; shift
+
+  [[ $# == 1 ]] && erreur "Besoin de seulement 2 arguments"
+  nb_arguments=1
+
+  avec_inactifs=--avec_inactifs
+  sigle_existe $depot $1 $avec_inactifs && erreur "Sigle n'existe pas"
+
+  #code reactiver
+
+  return $nb_arguments
 }
 
 
@@ -293,7 +359,14 @@ function reactiver {
 # - sigle inexistant
 #-------
 function prealables {
-    return 0
+  nb_arguments=0
+  assert_depot_existe $1
+  depot=$1; shift
+
+  avec_inactifs=--avec_inactifs
+  sigle_existe $depot $1 $avec_inactifs && erreur "Sigle n'existe pas"
+
+  return $nb_arguments
 }
 
 ##########################################################################
@@ -342,7 +415,8 @@ function main {
       prealables|\
       reactiver|\
       supprimer|\
-      trouver)
+      trouver|\
+      sigle_existe)
           $commande $depot "$@";;
 
       *)
