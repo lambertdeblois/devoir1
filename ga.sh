@@ -160,14 +160,13 @@ readonly SEPARATEUR_PREALABLES=:
 function sigle_existe {
   assert_depot_existe $1
   depot=$1; shift
-
+  echo $depot, $1
   if [[ $2 =~ --avec_inactifs ]]; then
     grep -q $1, $depot
     rep=$?
   else
     grep -q $1, $depot | grep -qv INACTIF$
     rep=$?
-    echo $rep
   fi
   echo $rep
   return $rep
@@ -281,13 +280,13 @@ function supprimer {
     assert_depot_existe $1
     depot=$1; shift
 
-    [[ $# == 1 ]] && erreur "Besoin de seulement 2 arguments"
+    [[ $# != 1 ]] && erreur "Besoin de seulement 2 arguments"
     nb_arguments=1
 
     avec_inactifs=--avec_inactifs
-    sigle_existe $depot $1 $avec_inactifs && erreur "Sigle n'existe pas"
+    ! sigle_existe $depot $1 $avec_inactifs && erreur "Sigle n'existe pas"
 
-    #code supprimer
+    sed -i /^"$1"/d $depot
 
     return $nb_arguments
 }
