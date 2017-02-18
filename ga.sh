@@ -258,7 +258,23 @@ function ajouter {
 # - item de format invalide
 #-------
 function trouver {
-    return 0
+    nb_arguments=0
+    assert_depot_existe $1
+    depot=$1; shift
+
+    [[ $# -lt 1 ]] && erreur "Besoin de 1 argument minimum"
+    nb_arguments=1
+
+    for motif do true; done
+
+    if [[ $1 =~ --avec_inactifs ]]; then
+        cat $depot | grep "$motif"
+        nb_arguments=2
+    else
+        cat $depot | grep .*"$motif".*,ACTIF$
+    fi
+
+    return $nb_arguments
 }
 
 #-------
