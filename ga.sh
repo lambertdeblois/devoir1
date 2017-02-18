@@ -219,8 +219,27 @@ function ajouter {
     [[ $# -lt 3 ]] && erreur "Besoin de 3 arguments minimum"
     nb_arguments=3
 
+    sigle=$1; shift
+    titre=$1; shift
+    nb_credits=$1; shift
+
+    sigle_valide $sigle
     inac=--avec_inactifs
-    sigle_existe $depot $1 $inac && erreur "Sigle existe deja"
+    sigle_existe $depot $sigle $inac && erreur "Sigle existe deja"
+
+    sigle_valide $1
+    ! sigle_existe $depot $1 && erreur "Prealable n'existe pas"
+    nouveau_cours="$sigle,$titre,$nb_credits,$1"; shift
+    (( nb_arguments++ ))
+
+    for prealables in "$@"; do
+        sigle_valide $1
+        ! sigle_existe $depot $1 && erreur "Prealable n'existe pas"
+        nouveau_cours="$nouveau_cours$SEPARATEUR_PREALABLES$1"
+        (( nb_arguments++ ))
+    done
+
+    echo "$nouveau_cours,ACTIF" >> "$depot"
 
     return $nb_arguments
 }
