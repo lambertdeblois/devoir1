@@ -152,15 +152,15 @@ readonly SEPARATEUR_PREALABLES=:
 function sigle_existe {
     assert_depot_existe $1
     depot=$1; shift
-    #echo sigle_existe $depot, $1
+
     if [[ $2 =~ --avec_inactifs ]]; then
       grep -q ^$1, $depot
-      rep=$? # 0 si trouve
+      rep=$?
     else
       grep ^$1, $depot | grep -qv INACTIF$
-      rep=$? # 0 si trouve
+      rep=$?
     fi
-    #echo $rep
+
     return $rep
 }
 
@@ -277,7 +277,6 @@ function nb_credits {
     depot=$1; shift
 
     for cours in "$@"; do
-      #echo $cours
       ! sigle_existe $depot $cours  && erreur "Sigle n'existe pas"
       (( nb_arguments++ ))
       (( nb_credits = nb_credits + $(awk -F"$SEP" '/^'$cours'/ {print $3}' $depot) ))
@@ -366,7 +365,7 @@ function reactiver {
 
   inac=--avec_inactifs
   ! sigle_existe $depot $1 $inac && erreur "Sigle n'existe pas"
-  echo "hey"
+
   grep -q ^$1.*,ACTIF$ $depot && erreur "cours deja actif"
 
   sed -i "/^"$1"/ s/INACTIF/ACTIF/" $depot
@@ -421,17 +420,13 @@ function main {
   # A COMPLETER: il faut verifier si le flag --depot=... a ete specifie.
   # Si oui, il faut modifier depot en consequence!
   if [[ $1 =~ --depot=* ]]; then
-    #echo "dans le if"
     depot=${1#*=};shift
   else
-    #echo "pas dans le if"
     depot=$DEPOT_DEFAUT
   fi
-  #echo $depot
+
   debug "On utilise le depot suivant:", $depot
 
-
-  # On analyse la commande (= dispatcher).
   commande=$1
   shift
   case $commande in
@@ -446,8 +441,7 @@ function main {
       prealables|\
       reactiver|\
       supprimer|\
-      trouver|\
-      sigle_existe)
+      trouver)
           $commande $depot "$@";;
 
       *)
