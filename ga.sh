@@ -160,13 +160,13 @@ readonly SEPARATEUR_PREALABLES=:
 function sigle_existe {
   assert_depot_existe $1
   depot=$1; shift
-  echo $depot, $1
+  echo sigle_existe $depot, $1
   if [[ $2 =~ --avec_inactifs ]]; then
-    grep -q $1, $depot
-    rep=$?
+    grep -q ^$1, $depot
+    rep=$? # 0 si trouve
   else
-    grep -q $1, $depot | grep -qv INACTIF$
-    rep=$?
+    grep ^$1, $depot | grep -qv INACTIF$
+    rep=$? # 0 si trouve
   fi
   echo $rep
   return $rep
@@ -253,13 +253,18 @@ function trouver {
 #-------
 function nb_credits {
     nb_arguments=0
+    nb_credits=0
     assert_depot_existe $1
     depot=$1; shift
 
-    avec_inactifs=--avec_inactifs
-    sigle_existe $depot $1 $avec_inactifs && erreur "Sigle existe deja"
+    for cours in "$@"; do
+      #echo $cours
+      ! sigle_existe $depot $cours  && erreur "Sigle n'existe pas"
+      (( nb_arguments++ ))
+      (( nb_credits = nb_credits + $(awk -F"$SEP" '/^'$cours'/ {print $3}' $depot) ))
+    done
 
-    #code nb_credits
+    echo $nb_credits
 
     return $nb_arguments
 }
