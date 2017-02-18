@@ -115,25 +115,17 @@ function init {
     depot=$1; shift
     nb_arguments=0
 
-    # A COMPLETER: traitement de la switch --detruire!
-    #echo $depot
     if [[ $1 =~ --detruire ]]; then
-      #echo "if detruire"
       detruire=true
       nb_arguments=1
     fi
 
     if [[ -f $depot ]]; then
-        # Depot existe deja.
-        # On le detruit quand --detruire est specifie.
         [[ $detruire ]] || erreur "Le fichier '$depot' existe.\
  Si vous voulez le detruire, utilisez 'init --detruire'."
-        #echo "depot detruit $depot"
         \rm -f $depot
     fi
 
-    # On 'cree' le fichier vide.
-    #echo "touch dept"
     touch $depot
 
     return $nb_arguments
@@ -158,18 +150,26 @@ readonly SEPARATEUR_PREALABLES=:
 #
 #arguments: depot sigle [--avec_inactifs]
 function sigle_existe {
-  assert_depot_existe $1
-  depot=$1; shift
-  echo sigle_existe $depot, $1
-  if [[ $2 =~ --avec_inactifs ]]; then
-    grep -q ^$1, $depot
-    rep=$? # 0 si trouve
-  else
-    grep ^$1, $depot | grep -qv INACTIF$
-    rep=$? # 0 si trouve
-  fi
-  echo $rep
-  return $rep
+    assert_depot_existe $1
+    depot=$1; shift
+    #echo sigle_existe $depot, $1
+    if [[ $2 =~ --avec_inactifs ]]; then
+      grep -q ^$1, $depot
+      rep=$? # 0 si trouve
+    else
+      grep ^$1, $depot | grep -qv INACTIF$
+      rep=$? # 0 si trouve
+    fi
+    #echo $rep
+    return $rep
+}
+
+#function pour valider si le sigle est valide
+#
+#arguments: sigle
+
+function sigle_valide {
+    [[ $1 =~ [A-Z]{3}[0-9]{4} ]] || erreur "sigle invalide"
 }
 
 #-------
