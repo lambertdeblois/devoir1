@@ -169,7 +169,7 @@ function sigle_existe {
 #arguments: sigle
 
 function sigle_valide {
-    [[ $1 =~ [A-Z]{3}[0-9]{4} ]] || erreur "sigle invalide"
+    [[ $1 =~ [A-Z]{3}[0-9]{4} ]] || erreur "Sigle incorrect"
 }
 
 #-------
@@ -225,16 +225,16 @@ function ajouter {
 
     sigle_valide $sigle
     inac=--avec_inactifs
-    sigle_existe $depot $sigle $inac && erreur "Sigle existe deja"
+    sigle_existe $depot $sigle $inac && erreur "meme sigle existe"
 
     sigle_valide $1
-    ! sigle_existe $depot $1 && erreur "Prealable n'existe pas"
+    ! sigle_existe $depot $1 && erreur "Prealable invalide"
     nouveau_cours="$sigle,$titre,$nb_credits,$1"; shift
     (( nb_arguments++ ))
 
     for prealables in "$@"; do
         sigle_valide $1
-        ! sigle_existe $depot $1 && erreur "Prealable n'existe pas"
+        ! sigle_existe $depot $1 && erreur "Prealable invalide"
         nouveau_cours="$nouveau_cours$SEPARATEUR_PREALABLES$1"
         (( nb_arguments++ ))
     done
@@ -293,7 +293,7 @@ function nb_credits {
     depot=$1; shift
 
     for cours in "$@"; do
-      ! sigle_existe $depot $cours  && erreur "Sigle n'existe pas"
+      ! sigle_existe $depot $cours  && erreur "Aucun cours $cours"
       (( nb_arguments++ ))
       (( nb_credits = nb_credits + $(awk -F"$SEP" '/^'$cours'/ {print $3}' $depot) ))
     done
@@ -319,11 +319,11 @@ function supprimer {
     assert_depot_existe $1
     depot=$1; shift
 
-    [[ $# != 1 ]] && erreur "Besoin de seulement 2 arguments"
+    [[ $# != 1 ]] && erreur "Arguments en trop"
     nb_arguments=1
 
     inac=--avec_inactifs
-    ! sigle_existe $depot $1 $inac && erreur "Sigle n'existe pas"
+    ! sigle_existe $depot $1 $inac && erreur "Aucun cours $1"
 
     sed -i /^"$1"/d $depot
 
@@ -351,9 +351,9 @@ function desactiver {
   nb_arguments=1
 
   inac=--avec_inactifs
-  ! sigle_existe $depot $1 $inac && erreur "Sigle n'existe pas"
+  ! sigle_existe $depot $1 $inac && erreur "Aucun cours $1"
 
-  grep -q ^$1.*INACTIF$ $depot && erreur "cours deja inactif"
+  grep -q ^$1.*INACTIF$ $depot && erreur "deja inactif $1"
 
   sed -i "/^"$1"/ s/ACTIF/INACTIF/" $depot
 
@@ -380,9 +380,9 @@ function reactiver {
   nb_arguments=1
 
   inac=--avec_inactifs
-  ! sigle_existe $depot $1 $inac && erreur "Sigle n'existe pas"
+  ! sigle_existe $depot $1 $inac && erreur "Aucun cours $1"
 
-  grep -q ^$1.*,ACTIF$ $depot && erreur "cours deja actif"
+  grep -q ^$1.*,ACTIF$ $depot && erreur "deja actif $1"
 
   sed -i "/^"$1"/ s/INACTIF/ACTIF/" $depot
 
