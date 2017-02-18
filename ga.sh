@@ -390,8 +390,12 @@ function prealables {
   assert_depot_existe $1
   depot=$1; shift
 
-  inac=--avec_inactifs
-  sigle_existe $depot $1 $inac && erreur "Sigle n'existe pas"
+  [[ $# != 1 ]] && erreur "seulement besoin du sigle"
+
+  ! sigle_existe $depot $1 && erreur "Sigle n'existe pas"
+  nb_arguments=1
+
+  cat $depot | awk -F"$SEP" '/^'$1'/ {print $4}' | sed 's/'$SEPARATEUR_PREALABLES'/\n/g' | sort
 
   return $nb_arguments
 }
