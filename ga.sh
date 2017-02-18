@@ -219,8 +219,8 @@ function ajouter {
     [[ $# -lt 3 ]] && erreur "Besoin de 3 arguments minimum"
     nb_arguments=3
 
-    avec_inactifs=--avec_inactifs
-    sigle_existe $depot $1 $avec_inactifs && erreur "Sigle existe deja"
+    inac=--avec_inactifs
+    sigle_existe $depot $1 $inac && erreur "Sigle existe deja"
 
     return $nb_arguments
 }
@@ -288,8 +288,8 @@ function supprimer {
     [[ $# != 1 ]] && erreur "Besoin de seulement 2 arguments"
     nb_arguments=1
 
-    avec_inactifs=--avec_inactifs
-    ! sigle_existe $depot $1 $avec_inactifs && erreur "Sigle n'existe pas"
+    inac=--avec_inactifs
+    ! sigle_existe $depot $1 $inac && erreur "Sigle n'existe pas"
 
     sed -i /^"$1"/d $depot
 
@@ -316,8 +316,8 @@ function desactiver {
   [[ $# != 1 ]] && erreur "Besoin de seulement 2 arguments"
   nb_arguments=1
 
-  avec_inactifs=--avec_inactifs
-  ! sigle_existe $depot $1 $avec_inactifs && erreur "Sigle n'existe pas"
+  inac=--avec_inactifs
+  ! sigle_existe $depot $1 $inac && erreur "Sigle n'existe pas"
 
   grep -q ^$1.*INACTIF$ $depot && erreur "cours deja inactif"
 
@@ -345,8 +345,8 @@ function reactiver {
   [[ $# != 1 ]] && erreur "Besoin de seulement 2 arguments"
   nb_arguments=1
 
-  avec_inactifs=--avec_inactifs
-  ! sigle_existe $depot $1 $avec_inactifs && erreur "Sigle n'existe pas"
+  inac=--avec_inactifs
+  ! sigle_existe $depot $1 $inac && erreur "Sigle n'existe pas"
   echo "hey"
   grep -q ^$1.*,ACTIF$ $depot && erreur "cours deja actif"
 
@@ -371,8 +371,8 @@ function prealables {
   assert_depot_existe $1
   depot=$1; shift
 
-  avec_inactifs=--avec_inactifs
-  sigle_existe $depot $1 $avec_inactifs && erreur "Sigle n'existe pas"
+  inac=--avec_inactifs
+  sigle_existe $depot $1 $inac && erreur "Sigle n'existe pas"
 
   return $nb_arguments
 }
