@@ -314,7 +314,7 @@ function desactiver {
   avec_inactifs=--avec_inactifs
   ! sigle_existe $depot $1 $avec_inactifs && erreur "Sigle n'existe pas"
 
-  grep -i ^$1.*INACTIF$ $depot && erreur "cours deja inactif"
+  grep -q ^$1.*INACTIF$ $depot && erreur "cours deja inactif"
 
   sed -i "/^"$1"/ s/ACTIF/INACTIF/" $depot
 
@@ -337,13 +337,15 @@ function reactiver {
   assert_depot_existe $1
   depot=$1; shift
 
-  [[ $# == 1 ]] && erreur "Besoin de seulement 2 arguments"
+  [[ $# != 1 ]] && erreur "Besoin de seulement 2 arguments"
   nb_arguments=1
 
   avec_inactifs=--avec_inactifs
-  sigle_existe $depot $1 $avec_inactifs && erreur "Sigle n'existe pas"
+  ! sigle_existe $depot $1 $avec_inactifs && erreur "Sigle n'existe pas"
+  echo "hey"
+  grep -q ^$1.*,ACTIF$ $depot && erreur "cours deja actif"
 
-  #code reactiver
+  sed -i "/^"$1"/ s/INACTIF/ACTIF/" $depot
 
   return $nb_arguments
 }
